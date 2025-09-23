@@ -14,9 +14,31 @@ symbol_count = {
     "D": 8
 }
 
+symbol_value = {
+    "A": 5,
+    "B": 4,
+    "C": 3,
+    "D": 2
+}
+
 """
 The above line shows a dictionary which stores the data in the form of key-value pair.
 """
+
+
+def check_winnings(columns, lines, bet, values):
+    winnings = 0
+    winning_lines = []
+    for line in range(lines):
+        symbol = columns[0][line]
+        for column in columns:
+            symbol_to_check = column[line]
+            if symbol != symbol_to_check:
+                break
+        else:
+            winnings += values[symbol] * bet
+            winning_lines.append(line + 1)
+    return winnings, winning_lines
 
 
 def get_slot_spin(rows, cols, symbols):
@@ -43,9 +65,26 @@ def print_slot_machine(columns):
     for row in range(len(columns[0])):
         for i, column in enumerate(columns):
             if i != len(columns) - 1:
-                print(column[row], "|")
+                print(column[row], end = " | ")
             else:
-                print(column[row])
+                print(column[row], end = "")
+        print()
+
+"""
+            enumerate() function gives each item in a list or any sequence and a number (index) while 
+            looping
+            
+            Example:
+            fruits = ["apple", "banana", "cherry"]
+            for i, fruit in enumerate(fruits)
+                print(i, fruit)
+            
+            Output:
+            0 apple
+            1 banana
+            2 cherry
+
+"""
 
 
 def deposit():
@@ -109,9 +148,7 @@ def bet_on_lines():
 
 
 
-
-def main():
-    balance = deposit()
+def spin(balance):
     lines = get_number_of_lines()
     while True:
         bet = bet_on_lines()
@@ -126,6 +163,33 @@ def main():
 
     print(f"You are betting ₹{bet} on {lines} lines each. \n"
           f"Your total bet is ₹{total_bet}")
+
+    slots = get_slot_spin(ROWS, COLUMNS, symbol_count)
+    print_slot_machine(slots)
+    winnings, winning_lines = check_winnings(slots, lines, bet, symbol_value)
+    print(f"You won ₹{winnings}.")
+    print(f"You won on line: ", *winning_lines)
+    # The * (unpacking operator) takes a list/tuple and expands or prints it into separate values.
+    return winnings - total_bet
+
+
+
+
+def main():
+    balance = deposit()
+    while balance > 0:
+        print(f"Current balance is ₹{balance}")
+        check = input("Press enter to play or (q to quit): ")
+        if check == "q":
+            break
+        balance += spin(balance)
+
+    print(f"You left with ₹{balance}")
+
+
+
+
+
 
 
 main()
